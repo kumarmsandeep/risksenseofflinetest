@@ -1,0 +1,49 @@
+<project xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+
+	<property name="src.dir" value="src" />
+	<property name="lib.dir" value="lib" />
+	<property name="main.class" value="com.risksense.converters.Main">
+	</property>
+
+
+	<path id="external.jars">
+		<fileset dir="${lib.dir}" includes="**/*.jar" />
+	</path>
+
+	<path id="project.classpath">
+		<pathelement location="${src.dir}" />
+		<path refid="external.jars" />
+	</path>
+
+	<target name="clean">
+		<delete dir="build" />
+	</target>
+
+	<target name="build">
+		<mkdir dir="build/main/classes" />
+		<javac includeantruntime="false" srcdir="src/main/java" destdir="build/main/classes" classpathref="project.classpath" />
+	</target>
+
+	<target name="package">
+		<mkdir dir="build/main/jar" />
+		<jar destfile="build/main/jar/Json2Xml.jar" basedir="build/main/classes">
+			<zipgroupfileset dir="${lib.dir}" includes="**/*.jar" />
+			<manifest>
+				<attribute name="Main-Class" value="${main.class}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="execute">
+		<echo>Running ......... ${main.class}</echo>
+		<echo message="JsonSourceFile     = ${json}" />
+		<echo message="XMLTargetFile     = ${xml}" />
+		<java jar="build/main/jar/Json2Xml.jar" fork="true">
+			<arg value="${json}" />
+			<arg value="${xml}" />
+		</java>
+		<echo message="XMLFile Generated" />
+	</target>
+
+</project>
